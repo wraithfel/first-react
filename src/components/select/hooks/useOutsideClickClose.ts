@@ -14,16 +14,20 @@ export const useOutsideClickClose = ({
   onChange,
 }: UseOutsideClickClose) => {
   useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      if (!isOpen) return; // если уже закрыто — ни в коем разе не трогаем
+    const handlePointerDown = (e: MouseEvent) => {
+      if (!isOpen) return;
       const el = rootRef.current;
+      // если клик вне rootRef — закрываем
       if (el && !el.contains(e.target as Node)) {
         onClose?.();
         onChange(false);
       }
     };
 
-    window.addEventListener('click', handleClick);
-    return () => window.removeEventListener('click', handleClick);
+    // слушаем на pointerdown (mousedown) в capture-фазе
+    window.addEventListener('pointerdown', handlePointerDown, true);
+    return () => {
+      window.removeEventListener('pointerdown', handlePointerDown, true);
+    };
   }, [isOpen, rootRef, onClose, onChange]);
 };
