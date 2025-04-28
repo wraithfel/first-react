@@ -1,33 +1,29 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
 type UseOutsideClickClose = {
-	isOpen: boolean;
-	onChange: (newValue: boolean) => void;
-	onClose?: () => void;
-	rootRef: React.RefObject<HTMLDivElement>;
+  isOpen: boolean;
+  rootRef: React.RefObject<HTMLElement>;
+  onClose?: () => void;
+  onChange: (newState: boolean) => void;
 };
 
 export const useOutsideClickClose = ({
-	isOpen,
-	rootRef,
-	onClose,
-	onChange,
+  isOpen,
+  rootRef,
+  onClose,
+  onChange,
 }: UseOutsideClickClose) => {
-	const optionRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (!isOpen) return; // если уже закрыто — ни в коем разе не трогаем
+      const el = rootRef.current;
+      if (el && !el.contains(e.target as Node)) {
+        onClose?.();
+        onChange(false);
+      }
+    };
 
-	useEffect(() => {
-		const handleClick = (event: MouseEvent) => {
-			const { target } = event;
-			if (target instanceof Node && !rootRef.current?.contains(target)) {
-				isOpen && onClose?.();
-				onChange?.(false);
-			}
-		};
-
-		window.addEventListener('click', handleClick);
-
-		return () => {
-			window.removeEventListener('click', handleClick);
-		};
-	}, [onClose, onChange, isOpen]);
+    window.addEventListener('click', handleClick);
+    return () => window.removeEventListener('click', handleClick);
+  }, [isOpen, rootRef, onClose, onChange]);
 };

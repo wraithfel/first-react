@@ -61,9 +61,9 @@ export const ArticleParamsForm = ({initialState, onApply, onReset}: ArticleParam
 	
 	return (
 		<>
+		<div ref={rootRef}>
 			<ArrowButton isOpen={isOpen} onClick={toggle} />
 			<aside
-				ref={rootRef}
 				className={clsx(styles.container, {
 					[styles.container_open] : isOpen
 				})}>
@@ -154,6 +154,7 @@ export const ArticleParamsForm = ({initialState, onApply, onReset}: ArticleParam
           </div>
         </form>
       </aside>
+	  </div>
     </>
   );
 };
